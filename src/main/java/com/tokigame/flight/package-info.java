@@ -5,4 +5,4 @@
  * @author Milinda Bandara
  *
  */
-package com.tokigames.flight;
+package com.tokigame.flight;

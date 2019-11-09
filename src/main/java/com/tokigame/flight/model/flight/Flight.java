@@ -1,6 +1,6 @@
 package com.tokigame.flight.model.flight;
 
-public class FlightData {
+public class Flight {
 
     private String departure;
 
@@ -10,7 +10,7 @@ public class FlightData {
 
     private int arrivalTime;
 
-    public FlightData(String departure, String arrival, int departureTime, int arrivalTime) {
+    public Flight(String departure, String arrival, int departureTime, int arrivalTime) {
         this.departure = departure;
         this.arrival = arrival;
         this.departureTime = departureTime;

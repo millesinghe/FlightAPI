@@ -3,6 +3,8 @@ package com.tokigame.flight.core;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.json.JSONObject;
@@ -18,7 +20,7 @@ public class DataExtractor {
 
 	private ServiceRequestor service = null;
 
-	private Stream<BizFlight> resultingStream;
+	private List<BizFlight> flightList;
 
 	private static DataExtractor extractor = null;
 
@@ -36,7 +38,7 @@ public class DataExtractor {
 
 	
 	private BizFlight[] getCheapFlights() {
-		HttpResponse response = service.executorService(Constant.CHEAP_URL);
+		HttpResponse response = service.executorService(Constant.SERVER_HOST+Constant.CHEAP_URL);
 		BizFlight[] refactCheap = null;
 		try {
 			CheapFlight[] flight = new ObjectMapper().readValue(new JSONObject(response.getResult()).get("data").toString(), CheapFlight[].class);
@@ -68,7 +70,7 @@ public class DataExtractor {
 	}
 
 	private BizFlight[] getBizFlights() {
-		HttpResponse response = service.executorService(Constant.BIZ_URL);
+		HttpResponse response = service.executorService(Constant.SERVER_HOST+Constant.BIZ_URL);
 		BizFlight[] flight = null;
 		try {
 			System.out.println();
@@ -87,17 +89,16 @@ public class DataExtractor {
 		Stream<BizFlight> streamBiz = Arrays.stream(biz);
 		
 		//Stream.concat(streamCheaps, streamBiz);
-		resultingStream = Stream.concat(streamCheaps, streamBiz);
-
+		flightList =  Stream.concat(streamCheaps, streamBiz).collect(Collectors.toList());
 //		resultingStream.allMatch(null);
 
 	}
 
-	public Stream<BizFlight> getResultingStream() {
-		return resultingStream;
+	public List<BizFlight> getFlightList() {
+		return flightList;
 	}
 
-	public void setResultingStream(Stream<BizFlight> resultingStream) {
-		this.resultingStream = resultingStream;
+	public void setFlightList(List<BizFlight> flightList) {
+		this.flightList = flightList;
 	}
 }
