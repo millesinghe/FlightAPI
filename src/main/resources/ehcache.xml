@@ -1,0 +1,16 @@
+<config
+        xmlns='http://www.ehcache.org/v3'
+>
+
+    <cache alias="flights">
+
+        <expiry>
+            <ttl unit="seconds">60</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">2000</heap>
+            <offheap unit="MB">100</offheap>
+        </resources>
+    </cache>
+</config>

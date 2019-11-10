@@ -1,50 +1,60 @@
 package com.tokigame.flight.api;
 
-import com.tokigame.flight.core.ArrivalProcessor;
-import com.tokigame.flight.core.DataProcessor;
-import com.tokigame.flight.core.DepartProcessor;
-import com.tokigame.flight.model.flight.Flight;
+import com.tokigame.flight.model.Flight;
+import com.tokigame.flight.model.Flights;
+import com.tokigame.flight.service.FlightBookingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
-@RequestMapping(path = "/api")
+@RequestMapping(path = "/flight")
 public class FlightController {
 
-    DataProcessor dataProcessor;
+    @Autowired
+    private FlightBookingService flightBookingService;
 
-    @GetMapping(path= "/test")
+
+    @GetMapping(path = "/test")
     public String testService() {
         return "Flight API Test Endpoint - Checked and Passed";
     }
 
-    // Sample URL -
-    @GetMapping(path= "/{type}")
-    public List<Flight> getArrivalFlights(@PathVariable("type") String type, @RequestParam String toPlace) {
-        List<Flight> _ret  = null;
-        if(type.equals("arrival")) {
-            dataProcessor = new ArrivalProcessor();
-            _ret  =   ((ArrivalProcessor) dataProcessor).getArrivalFlights(toPlace);
-        } else if(type.equals("departure")) {
-            dataProcessor = new DepartProcessor();
-            _ret  =   ((DepartProcessor) dataProcessor).getDepartFlights(toPlace);
-        }
-        return _ret;
-    }
+    @GetMapping(path = "{type}")
+    public ResponseEntity<Flights> getArrivalFlightsWithDate(@PathVariable("type") String type, @RequestParam String toPlace, @RequestParam(value = "toTime", required = false) String toTime) {
+        List<Flight> flightList = null;
 
-    // Sample URL -
-    @GetMapping(path= "date/{type}")
-    public List<Flight> getArrivalFlightsWithDate(@PathVariable("type") String type, @RequestParam String toPlace, @RequestParam String toTime) {
-        List<Flight> _ret  = null;
-        if(type.equals("arrival")) {
-            dataProcessor = new ArrivalProcessor();
-            _ret  =   ((ArrivalProcessor) dataProcessor).getArrivalFlights(toPlace, Double.parseDouble(toTime));
-        } else if(type.equals("departure")) {
-            dataProcessor = new DepartProcessor();
-            _ret  =   ((DepartProcessor) dataProcessor).getDepartFlights(toPlace, Double.parseDouble(toTime));
+        switch (type) {
+            case "arrival":
+                if (Objects.nonNull(toTime)) {
+                    flightList = flightBookingService.getArrivalFlightsByPlaceAndTime(toPlace, Double.parseDouble(toTime));
+                } else {
+                    flightList = flightBookingService.getArrivalFlightsByPlace(toPlace);
+                }
+                break;
+
+            case "departure":
+                if (Objects.nonNull(toTime)) {
+                    flightList = flightBookingService.getDepartFlightsByPlaceAndTime(toPlace, Double.parseDouble(toTime));
+                } else {
+                    flightList = flightBookingService.getDepartFlightsByPlace(toPlace);
+                }
+                break;
+            default:
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new Flights("Type Not Available"));
         }
-        return _ret;
+
+
+        if (CollectionUtils.isEmpty(flightList)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Flights(flightList));
+
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(new Flights(flightList));
     }
 
 }
