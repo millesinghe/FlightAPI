@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tokigame.flight.model.flight.BizFlight;
+import com.tokigame.flight.model.flight.Flight;
 import com.tokigame.flight.model.flight.CheapFlight;
 import com.tokigame.flight.model.response.HttpResponse;
 import com.tokigame.flight.util.Constant;
@@ -20,7 +20,7 @@ public class DataExtractor {
 
 	private ServiceRequestor service = null;
 
-	private List<BizFlight> flightList;
+	private List<Flight> flightList;
 
 	private static DataExtractor extractor = null;
 
@@ -37,9 +37,9 @@ public class DataExtractor {
 	}
 
 	
-	private BizFlight[] getCheapFlights() {
+	private Flight[] getCheapFlights() {
 		HttpResponse response = service.executorService(Constant.SERVER_HOST+Constant.CHEAP_URL);
-		BizFlight[] refactCheap = null;
+		Flight[] refactCheap = null;
 		try {
 			CheapFlight[] flight = new ObjectMapper().readValue(new JSONObject(response.getResult()).get("data").toString(), CheapFlight[].class);
 			refactCheap = this.refactorFlightList(flight);
@@ -51,13 +51,13 @@ public class DataExtractor {
 		return refactCheap;
 	}
 
-	private BizFlight[] refactorFlightList(CheapFlight[] flights) {
+	private Flight[] refactorFlightList(CheapFlight[] flights) {
 		
-		ArrayList<BizFlight> bizflight = new ArrayList<BizFlight>();
-		BizFlight cheap = null;
+		ArrayList<Flight> bizflight = new ArrayList<Flight>();
+		Flight cheap = null;
 		
 		for (CheapFlight cheapFlight : flights) {
-			cheap = new BizFlight();
+			cheap = new Flight();
 			cheap.setArrivalTime(cheapFlight.getArrival());
 			cheap.setDepartureTime(cheapFlight.getDeparture());
 			cheap.setArrival(cheapFlight.getRoute().split("-")[0]);
@@ -66,15 +66,15 @@ public class DataExtractor {
 			bizflight.add(cheap);
 		}
 		
-		return bizflight.toArray(new BizFlight[bizflight.size()]);
+		return bizflight.toArray(new Flight[bizflight.size()]);
 	}
 
-	private BizFlight[] getBizFlights() {
+	private Flight[] getBizFlights() {
 		HttpResponse response = service.executorService(Constant.SERVER_HOST+Constant.BIZ_URL);
-		BizFlight[] flight = null;
+		Flight[] flight = null;
 		try {
 			System.out.println();
-			flight = new ObjectMapper().readValue(new JSONObject(response.getResult()).get("data").toString(), BizFlight[].class);
+			flight = new ObjectMapper().readValue(new JSONObject(response.getResult()).get("data").toString(), Flight[].class);
 		} catch (IOException e) {
 			e.printStackTrace();
 		};
@@ -82,11 +82,11 @@ public class DataExtractor {
 	}
 
 	public void extractAll() {
-		BizFlight[] cheaps = this.getCheapFlights();
-		Stream<BizFlight> streamCheaps = Arrays.stream(cheaps);
+		Flight[] cheaps = this.getCheapFlights();
+		Stream<Flight> streamCheaps = Arrays.stream(cheaps);
 		
-		BizFlight[] biz = this.getBizFlights();
-		Stream<BizFlight> streamBiz = Arrays.stream(biz);
+		Flight[] biz = this.getBizFlights();
+		Stream<Flight> streamBiz = Arrays.stream(biz);
 		
 		//Stream.concat(streamCheaps, streamBiz);
 		flightList =  Stream.concat(streamCheaps, streamBiz).collect(Collectors.toList());
@@ -94,11 +94,11 @@ public class DataExtractor {
 
 	}
 
-	public List<BizFlight> getFlightList() {
+	public List<Flight> getFlightList() {
 		return flightList;
 	}
 
-	public void setFlightList(List<BizFlight> flightList) {
+	public void setFlightList(List<Flight> flightList) {
 		this.flightList = flightList;
 	}
 }
