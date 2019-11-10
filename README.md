@@ -27,20 +27,20 @@ API service is defaultly up and running in port 9090.
 API service is maintaining the cache layer for 60 seconds and 2000 entities are maintaining. default cache maintaining size is 100MB.
 
 ### API endpoints
-> Arrival Flights with Location
-- eg - toPlace --> Istanbul
+- Arrival Flights with Location
+> eg - toPlace --> Istanbul
 >>      http://localhost:9090/flight/arrival?toPlace=Istanbul
 
-> Arrival Flights with Location and Time after
-- eg - toPlace --> Istanbul AND toTime > 1564410656
+- Arrival Flights with Location and Time after
+> eg - toPlace --> Istanbul AND toTime > 1564410656
 >>     http://localhost:9090/flight/arrival?toPlace=Istanbul&toTime=1564410656
 
-> Departuring Flights with Location
-- eg - toPlace --> Istanbul
+- Departuring Flights with Location
+> eg - toPlace --> Istanbul
 >>      http://localhost:9090/flight/departure?toPlace=Istanbul
 
-> Departuring Flights with Location and Time after
-- eg - toPlace --> Istanbul AND toTime > 1564410656
+- Departuring Flights with Location and Time after
+> eg - toPlace --> Istanbul AND toTime > 1564410656
 >>     http://localhost:9090/flight/departure?toPlace=Istanbul&toTime=1564410656
 
 
